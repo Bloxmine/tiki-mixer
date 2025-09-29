@@ -1,0 +1,496 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mixology | Concoct Cocktails</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lobster&family=Lato:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f4f1de; /* Sandy beige */
+            color: #b51313;
+            font-family: 'Lato', sans-serif;
+            background-image: url('https://www.transparenttextures.com/patterns/gray-floral.png');
+        }
+        h1 {
+            font-family: 'Lobster', cursive;
+            color: #4fd1c5; /* Teal 300 */
+            font-size: 3em;
+            margin: 20px 0;
+            letter-spacing: 0.1em;
+            text-shadow: 2px 2px #c83c3c;
+        }
+        h2 {
+            color: #f4a261; /* Tiki orange */
+        }
+        .parchment {
+            background-color: #f5eeda;
+            color: #4a2c2a;
+            border: 2px solid #c8b08a;
+            box-shadow: 0 0 20px rgba(0,0,0,0.7);
+            background-image: url('https://www.transparenttextures.com/patterns/old-paper.png');
+        }
+        .ingredient {
+            width: 100px;
+            height: 100px;
+            margin: 10px;
+            display: inline-block;
+            border: 2px solid #ccc;
+            border-radius: 10px;
+            text-align: center;
+            line-height: 100px;
+            background-color: #fff;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 2.5em;
+            position: relative;
+        }
+        .ingredient:hover {
+            background-color: #f0f0f0;
+            transform: scale(1.05);
+        }
+        .ingredient.selected {
+            background-color: #4fd1c5;
+            color: white;
+            border-color: #2d7e7b;
+        }
+        .ingredient.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+        .ingredient-section {
+            margin: 30px 20px;
+            padding: 20px;
+            border: 2px solid #c8b08a;
+            border-radius: 15px;
+            background-color: rgba(245, 238, 218, 0.8);
+        }
+        .section-title {
+            font-family: 'Lobster', cursive;
+            color: #c83c3c;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        .step-indicator {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 20px;
+            padding: 10px;
+            background-color: rgba(79, 209, 197, 0.2);
+            border-radius: 10px;
+            border: 1px solid #4fd1c5;
+        }
+        /* Tooltip styles */
+        .tooltip {
+            position: absolute;
+            bottom: 120px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #333;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 14px;
+            font-family: 'Lato', sans-serif;
+            white-space: nowrap;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s, visibility 0.3s;
+            z-index: 1000;
+        }
+        .tooltip::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: #333;
+        }
+        .ingredient:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        /* tiki elements */
+        .mask-plain {
+            background-image: url('images/objects/tiki/mask-plain.png');
+            background-size: contain;
+            width: 50px;
+            height: 100px;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .bamboo-wall {
+            background-image: url('images/textures/bamboo.png');
+            background-size: cover;
+            width: 100%;
+            height: 200px;
+            position: relative;
+        }
+        #vignette {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            background: radial-gradient(ellipse at center, rgba(0,0,0,0) 60%, rgba(0,0,0,0.5) 100%);
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+    <div id="vignette"></div>
+    <!-- Header with tiki masks -->
+    <header style="display: flex; align-items: center; justify-content: center; margin-top: 20px;">
+        <div class="mask-plain" style="margin-right: 20px;"></div>
+        <h1 style="text-align: center;">The Tiki Lounge</h1>
+        <div class="mask-plain" style="margin-left: 20px;"></div>
+    </header>
+
+    <!-- Step indicator -->
+    <div id="stepIndicator" class="step-indicator">
+        Step 1: Select a Base Spirit
+    </div>
+
+    <!-- Base ingredients -->
+    <div class="ingredient-section">
+        <h2 class="section-title">🥃 Base Spirits</h2>
+        <div id="bases">
+            <div class="ingredient" id="vodka">
+                <img src="images/emojis/vodka.png" alt="Vodka" style="width: 1em; height: 1em; vertical-align: middle; pointer-events: none;">
+                <div class="tooltip">Vodka</div>
+            </div>
+            <div class="ingredient" id="gin">
+                <img src="images/emojis/juniper.png" alt="Gin" style="width: 1em; height: 1em; vertical-align: middle; pointer-events: none;">
+                <div class="tooltip">Gin</div>
+            </div>
+            <div class="ingredient" id="rum">
+                🏴‍☠️
+                <div class="tooltip">Rum</div>
+            </div>
+            <div class="ingredient" id="tequila">
+                <img src="images/emojis/agave.png" alt="Tequila" style="width: 1em; height: 1em; vertical-align: middle; pointer-events: none;">
+                <div class="tooltip">Tequila</div>
+            </div>
+            <div class="ingredient" id="whiskey">
+                🥃
+                <div class="tooltip">Whiskey</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mixer ingredients -->
+    <div class="ingredient-section">
+        <h2 class="section-title">🧊 Mixers</h2>
+        <div id="mixers">
+            <div class="ingredient disabled" id="tonic">
+                🫧
+                <div class="tooltip">Tonic Water</div>
+            </div>
+            <div class="ingredient disabled" id="cola">
+                🥤
+                <div class="tooltip">Cola</div>
+            </div>
+            <div class="ingredient disabled" id="orangeJuice">
+                🍊
+                <div class="tooltip">Orange Juice</div>
+            </div>
+            <div class="ingredient disabled" id="cranberryJuice">
+                <img src="images/emojis/cranberry.png" alt="Cranberry Juice" style="width: 1em; height: 1em; vertical-align: middle; pointer-events: none;">
+                <div class="tooltip">Cranberry Juice</div>
+            </div>
+            <div class="ingredient disabled" id="soda">
+                💧
+                <div class="tooltip">Soda Water</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Garnish ingredients -->
+    <div class="ingredient-section">
+        <h2 class="section-title">🍋 Garnishes</h2>
+        <div id="garnishes">
+            <div class="ingredient disabled" id="lemon">
+                🍋
+                <div class="tooltip">Lemon</div>
+            </div>
+            <div class="ingredient disabled" id="lime">
+                <img src="images/emojis/lime.png" alt="Lime" style="width: 1m; height: 1em; vertical-align: middle; pointer-events: none;">
+                <div class="tooltip">Lime</div>
+            </div>
+            <div class="ingredient disabled" id="mint">
+                🌱
+                <div class="tooltip">Mint</div>
+            </div>
+            <div class="ingredient disabled" id="cherry">
+                🍒
+                <div class="tooltip">Cherry</div>
+            </div>
+            <div class="ingredient disabled" id="olive">
+                🫒
+                <div class="tooltip">Olive</div>
+            </div>
+        </div>
+    </div>
+    <!-- Mixing area -->
+    <div class="bamboo-wall">
+        <div id="mixingArea" style="border: 2px dashed #ccc; height: 200px; margin: 20px; text-align: center; line-height: 200px; background-color: #e9e9e9; border-radius: 15px;">
+            <div id="selectedIngredients" style="line-height: normal; padding-top: 60px;">
+                <p>Your selections will appear here</p>
+            </div>
+        </div>
+        <!-- Result area -->
+        <div id="result" style="text-align: center; margin: 20px; font-size: 1.5em; min-height: 50px;">
+            Make your selections to create a cocktail!
+        </div>
+        <!-- Reset button -->
+        <div style="text-align: center; margin: 20px;">
+            <button id="resetButton" style="padding: 10px 20px; font-size: 1.2em; background-color: #f4a261; color: white; border: none; border-radius: 10px; cursor: pointer; font-family: 'Lato', sans-serif;">
+                🔄 Start Over
+            </button>
+        </div>
+        <div class="mask-plain" style="margin: 20px auto;"></div>
+    </div>
+</body>
+<script>
+    // Sequential selection functionality for ingredients
+    const ingredients = document.querySelectorAll('.ingredient');
+    const stepIndicator = document.getElementById('stepIndicator');
+    const selectedIngredientsDiv = document.getElementById('selectedIngredients');
+    const result = document.getElementById('result');
+    const resetButton = document.getElementById('resetButton');
+
+    let currentStep = 1; // 1 = base, 2 = mixer, 3 = garnish
+    let selectedIngredients = [];
+    const selections = {
+        base: null,
+        mixer: null,
+        garnish: null
+    };
+
+    const cocktails = {
+        "Vodka + Orange Juice + Cherry": "You made a Screwdriver! 🍹",
+        "Gin + Tonic Water + Lime": "You made a Gin and Tonic! 🍸",
+        "Rum + Cola + Lime": "You made a Cuba Libre! 🥃",
+        "Tequila + Orange Juice + Lime": "You made a Tequila Sunrise! 🌅",
+        "Whiskey + Cola + Lemon": "You made a Whiskey Cola! 🥃",
+        "Vodka + Cranberry Juice + Lime": "You made a Cape Codder! 🍸",
+        "Gin + Soda Water + Mint": "You made a Gin Fizz! 🍸",
+        "Rum + Orange Juice + Cherry": "You made a Mai Tai! 🍹",
+        "Tequila + Soda Water + Lime": "You made a Paloma! 🍹",
+        "Vodka + Gin + Rum + Tequila + Whiskey + Tonic Water + Cola + Orange Juice + Cranberry Juice + Soda Water + Lemon + Lime + Mint + Cherry + Olive": "Ewwwww... what the hell? 🍹"
+    };
+
+    ingredients.forEach(ingredient => {
+        ingredient.addEventListener('click', handleIngredientClick);
+    });
+
+    // reset button
+    resetButton.addEventListener('click', resetSelection);
+
+    function handleIngredientClick(e) {
+        const ingredient = e.target;
+        const ingredientId = ingredient.id;
+        
+        // check if ingredient is disabled
+        if (ingredient.classList.contains('disabled')) {
+            return;
+        }
+
+        // Determine which section this ingredient belongs to
+        let section = '';
+        if (document.querySelector('#bases').contains(ingredient)) {
+            section = 'base';
+        } else if (document.querySelector('#mixers').contains(ingredient)) {
+            section = 'mixer';
+        } else if (document.querySelector('#garnishes').contains(ingredient)) {
+            section = 'garnish';
+        }
+
+        if (ingredient.classList.contains('selected')) {
+            ingredient.classList.remove('selected');
+            selections[section] = null;
+
+            moveBackToStep(section);
+            updateDisplay();
+            return;
+        }
+
+        // only allow selection if it's the current step!!
+        if ((currentStep === 1 && section !== 'base') ||
+            (currentStep === 2 && section !== 'mixer') ||
+            (currentStep === 3 && section !== 'garnish')) {
+            return;
+        }
+
+        // clear previous selection in this section
+        if (selections[section]) {
+            document.getElementById(selections[section]).classList.remove('selected');
+        }
+
+        // select the clicked ingredient
+        ingredient.classList.add('selected');
+        selections[section] = ingredientId;
+
+        // move to next step
+        moveToNextStep();
+        updateDisplay();
+    }
+
+    function moveToNextStep() {
+        if (currentStep === 1 && selections.base) {
+            currentStep = 2;
+            enableSection('mixers');
+            stepIndicator.textContent = "Step 2: Select a Mixer";
+        } else if (currentStep === 2 && selections.mixer) {
+            currentStep = 3;
+            enableSection('garnishes');
+            stepIndicator.textContent = "Step 3: Select a Garnish";
+        } else if (currentStep === 3 && selections.garnish) {
+            stepIndicator.textContent = "🎉 Cocktail Complete!";
+            checkCocktail();
+        }
+    }
+// lots of if else statements!!
+    function moveBackToStep(section) {
+        if (section === 'base') {
+            // if base is deselected, clear everything and go back to step 1
+            selections.mixer = null;
+            selections.garnish = null;
+            currentStep = 1;
+            
+            // clear selections in later sections
+            document.querySelectorAll('#mixers .ingredient.selected, #garnishes .ingredient.selected').forEach(ingredient => {
+                ingredient.classList.remove('selected');
+            });
+            
+            // disable later sections
+            disableSection('mixers');
+            disableSection('garnishes');
+            stepIndicator.textContent = "Step 1: Select a Base Spirit";
+            result.textContent = "Make your selections to create a cocktail!";
+            
+        } else if (section === 'mixer') {
+            // if mixer is deselected, clear garnish and go back to step 2
+            selections.garnish = null;
+            currentStep = 2;
+            
+            // xlear garnish selection
+            document.querySelectorAll('#garnishes .ingredient.selected').forEach(ingredient => {
+                ingredient.classList.remove('selected');
+            });
+            
+            // disable garnishes section
+            disableSection('garnishes');
+            stepIndicator.textContent = "Step 2: Select a Mixer";
+            result.textContent = "Make your selections to create a cocktail!";
+            
+        } else if (section === 'garnish') {
+            // if garnish is deselected, go back to step 3
+            currentStep = 3;
+            stepIndicator.textContent = "Step 3: Select a Garnish";
+            result.textContent = "Make your selections to create a cocktail!";
+        }
+    }
+
+    function enableSection(sectionId) {
+        const sectionIngredients = document.querySelectorAll(`#${sectionId} .ingredient`);
+        sectionIngredients.forEach(ingredient => {
+            ingredient.classList.remove('disabled');
+        });
+    }
+
+    function disableSection(sectionId) {
+        const sectionIngredients = document.querySelectorAll(`#${sectionId} .ingredient`);
+        sectionIngredients.forEach(ingredient => {
+            ingredient.classList.add('disabled');
+        });
+    }
+
+    function updateDisplay() {
+        const selectedList = [];
+        if (selections.base) selectedList.push(getIngredientName(selections.base));
+        if (selections.mixer) selectedList.push(getIngredientName(selections.mixer));
+        if (selections.garnish) selectedList.push(getIngredientName(selections.garnish));
+
+        if (selectedList.length > 0) {
+            selectedIngredientsDiv.innerHTML = `
+                <p style="margin: 5px 0;"><strong>Your Selections:</strong></p>
+                <p style="margin: 5px 0;">${selectedList.join(' + ')}</p>
+            `;
+        } else {
+            selectedIngredientsDiv.innerHTML = '<p>Your selections will appear here</p>';
+        }
+    }
+    // helper to get ingredient name from id 
+    function getIngredientName(id) {
+        switch(id) {
+            case 'vodka': return 'Vodka';
+            case 'gin': return 'Gin';
+            case 'rum': return 'Rum';
+            case 'tequila': return 'Tequila';
+            case 'whiskey': return 'Whiskey';
+            case 'tonic': return 'Tonic Water';
+            case 'cola': return 'Cola';
+            case 'orangeJuice': return 'Orange Juice';
+            case 'cranberryJuice': return 'Cranberry Juice';
+            case 'soda': return 'Soda Water';
+            case 'lemon': return 'Lemon';
+            case 'lime': return 'Lime';
+            case 'mint': return 'Mint';
+            case 'cherry': return 'Cherry';
+            case 'olive': return 'Olive';
+            default: return '';
+        }
+    }
+    // check if the selected combination makes a known cocktail
+    function checkCocktail() {
+        if (selections.base && selections.mixer && selections.garnish) {
+            const key = [
+                getIngredientName(selections.base),
+                getIngredientName(selections.mixer),
+                getIngredientName(selections.garnish)
+            ].join(' + ');
+
+            if (cocktails[key]) {
+                result.textContent = cocktails[key];
+            } else {
+                result.textContent = "This combination doesn't make a known cocktail, but it might still be delicious! 🍹";
+            }
+        }
+    }
+
+    function resetSelection() {
+        // clear
+        selections.base = null;
+        selections.mixer = null;
+        selections.garnish = null;
+        currentStep = 1;
+
+        // remove selected class from all ingredients
+        ingredients.forEach(ingredient => {
+            ingredient.classList.remove('selected');
+        });
+
+        // disable mixers and garnishes
+        document.querySelectorAll('#mixers .ingredient, #garnishes .ingredient').forEach(ingredient => {
+            ingredient.classList.add('disabled');
+        });
+
+        // reset displays
+        stepIndicator.textContent = "Step 1: Select a Base Spirit";
+        selectedIngredientsDiv.innerHTML = '<p>Your selections will appear here</p>';
+        result.textContent = "Make your selections to create a cocktail!";
+    }
+    // initialise
+    resetSelection();
+</script>
+</html>
