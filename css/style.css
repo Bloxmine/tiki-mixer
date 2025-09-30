@@ -1,0 +1,330 @@
+:root {
+    --teal: #4fd1c5;
+    --tiki-orange: #f4a261;
+    --sandy-beige: #f4f1de;
+    --dark-red: #b51313;
+    --light-red: #c83c3c;
+    --parchment-border: #c8b08a;
+    --ingredient-border: #ccc;
+    --ingredient-selected-border: #2d7e7b;
+    --ingredient-bg: #fff;
+    --ingredient-hover-bg: #f0f0f0;
+    --ingredient-disabled-opacity: 0.5;
+    --ingredient-section-bg: rgba(245, 238, 218, 0.8);
+    --section-title: #c83c3c;
+    --step-indicator-bg: rgba(79, 209, 197, 0.2);
+    --step-indicator-border: #4fd1c5;
+    --tooltip-bg: #333;
+    --tooltip-color: #fff;
+    --mask-plain-bg: url('../images/objects/tiki/mask-plain.png');
+    --bamboo-wall-bg: url('../images/textures/bamboo.png');
+    --vignette-bg: radial-gradient(ellipse at center, rgba(0,0,0,0) 60%, rgba(0,0,0,0.5) 100%);
+}
+
+body {
+    background-color: var(--sandy-beige);
+    color: var(--dark-red);
+    font-family: 'Lato', sans-serif;
+    background-image: url('../images/textures/gray-floral.png');
+}
+h1 {
+    font-family: 'Lobster', cursive;
+    color: var(--teal);
+    font-size: 3em;
+    margin: 20px 0;
+    letter-spacing: 0.1em;
+    text-shadow: 2px 2px var(--light-red);
+}
+h2 {
+    color: var(--tiki-orange);
+}
+.parchment {
+    background-color: var(--sandy-beige);
+    color: var(--dark-red);
+    border: 2px solid var(--parchment-border);
+    box-shadow: 0 0 20px rgba(0,0,0,0.7);
+    background-image: url('../images/textures/old-paper.png');
+}
+.ingredient {
+    width: 100px;
+    height: 100px;
+    margin: 10px;
+    display: inline-block;
+    border: 2px solid var(--ingredient-border);
+    border-radius: 10px;
+    text-align: center;
+    line-height: 100px;
+    background-color: var(--ingredient-bg);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 2.5em;
+    position: relative;
+}
+.ingredient:hover {
+    background-color: var(--ingredient-hover-bg);
+    transform: scale(1.05);
+}
+.ingredient.selected {
+    background-color: var(--teal);
+    color: var(--tooltip-color);
+    border-color: var(--ingredient-selected-border);
+}
+.ingredient.disabled {
+    opacity: var(--ingredient-disabled-opacity);
+    cursor: not-allowed;
+}
+.ingredient-section {
+    margin: 30px 20px;
+    padding: 20px;
+    border: 2px solid var(--parchment-border);
+    border-radius: 15px;
+    background-color: var(--ingredient-section-bg);
+}
+.section-title {
+    font-family: 'Lobster', cursive;
+    color: var(--section-title);
+    font-size: 1.8em;
+    margin-bottom: 15px;
+    text-align: center;
+}
+.step-indicator {
+    text-align: center;
+    font-size: 1.2em;
+    margin: 20px;
+    padding: 10px;
+    background-color: var(--step-indicator-bg);
+    border-radius: 10px;
+    border: 1px solid var(--step-indicator-border);
+}
+/* Tooltip styles */
+.tooltip {
+    position: absolute;
+    bottom: 120px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: var(--tooltip-bg);
+    color: var(--tooltip-color);
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: 'Lato', sans-serif;
+    white-space: nowrap;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s, visibility 0.3s;
+    z-index: 1000;
+}
+.tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--tooltip-bg);
+}
+.ingredient:hover .tooltip {
+    opacity: 1;
+    visibility: visible;
+}
+/* tiki elements */
+.mask-plain {
+    background-image: var(--mask-plain-bg);
+    background-size: contain;
+    width: 50px;
+    height: 100px;
+    position: relative;
+    animation: float-wobble 3s ease-in-out infinite;
+}
+@keyframes float-wobble {
+    0%, 100% { transform: translateY(0); }
+    25% { transform: translateY(-10px) rotate(5deg); }
+    50% { transform: translateY(0) rotate(0deg); }
+    75% { transform: translateY(-10px) rotate(-5deg); }
+}
+.leaf {
+    width: 250px;
+    height: 400px;
+    background-image: url('../images/objects/leaf.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: fixed;
+    bottom: -250px;
+    animation: sway 4s ease-in-out infinite;
+    z-index: 5;
+    pointer-events: none;
+}
+.leaf.left {
+    left: 80px;
+    transform-origin: bottom right;
+    animation-delay: 0s;
+}
+.leaf.right {
+    right: -180px;
+    transform-origin: bottom left;
+    animation-delay: 2s;
+    animation-name: sway-right;
+}
+@keyframes sway {
+    0%, 100% { transform: rotate(-10deg); }
+    50% { transform: rotate(0deg); }
+}
+@keyframes sway-right {
+    0%, 100% { transform: scaleX(-1) rotate(-10deg); }
+    50% { transform: scaleX(-1) rotate(0deg); }
+}
+.bamboo-wall {
+    background-image: var(--bamboo-wall-bg);
+    background-size: cover;
+    width: 100%;
+    height: 200px;
+    position: relative;
+}
+#vignette {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background: var(--vignette-bg);
+    z-index: 10;
+}
+
+/* Header styles */
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.header .mask-plain.left {
+    margin-right: 20px;
+}
+
+.header .mask-plain.right {
+    margin-left: 20px;
+}
+
+.header h1 {
+    text-align: center;
+}
+
+.ingredient-image {
+    width: 1em;
+    height: 1em;
+    vertical-align: middle;
+    pointer-events: none;
+}
+
+.mixing-area {
+    border: 2px dashed #ccc;
+    height: 200px;
+    margin: 20px;
+    text-align: center;
+    line-height: 200px;
+    background-image: url('../images/textures/bamboo.png');
+    border-radius: 15px;
+}
+
+.selected-ingredients {
+    line-height: normal;
+    padding-top: 60px;
+}
+
+.result {
+    text-align: center;
+    margin: 20px;
+    font-size: 1.5em;
+    min-height: 50px;
+    color: white;
+    font: bold 3em 'Lobster', cursive;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
+}
+
+.button-container {
+    text-align: center;
+    margin: 20px;
+}
+
+.reset-button {
+    padding: 10px 20px;
+    font-size: 1.2em;
+    background-color: #f4a261;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-family: 'Lato', sans-serif;
+}
+
+.bamboo-wall .mask-plain {
+    margin: 20px auto;
+}
+
+.selection-item {
+    margin: 5px 0;
+}
+
+/* cocktail shaker */
+.cocktail-shaker {
+    width: 200px;
+    height: 300px;
+    background-image: url('../images/objects/shaker.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    margin: 20px auto;
+    cursor: pointer;
+    transition: transform 0.2s ease;
+    position: relative;
+}
+
+.cocktail-shaker:hover {
+    transform: scale(1.1);
+}
+
+.cocktail-shaker.shaking {
+    animation: shake 0.5s ease-in-out infinite;
+}
+
+@keyframes shake {
+    0%   { transform: rotate(-10deg); }
+    25%  { transform: rotate(10deg); }
+    50%  { transform: rotate(-10deg); }
+    75%  { transform: rotate(10deg); }
+    100% { transform: rotate(-10deg); }
+}
+/* image of sunshine effect behind the shaker when done */
+.sunshine-effect {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 300px;
+    height: 300px;
+    background-image: url('../images/objects/sunshine.png');
+    background-size: contain;
+    background-repeat: no-repeat;
+    background-position: center;
+    transform: translate(-50%, -50%);
+    opacity: 0;
+    pointer-events: none;
+    z-index: -1;
+    transition: opacity 0.5s ease-in;
+}
+
+.sunshine-effect.show {
+    opacity: 0.8;
+    animation: rotate 20s linear infinite;
+}
+
+@keyframes rotate {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+
+/* Center align ingredients within sections */
+#bases, #mixers, #garnishes {
+    text-align: center;
+}
