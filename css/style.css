@@ -197,6 +197,36 @@ h2 {
     align-items: center;
     justify-content: center;
     margin-top: 20px;
+    position: relative;
+}
+
+.music-toggle {
+    position: absolute;
+    top: 0;
+    right: 20px;
+    background: none;
+    border: 2px solid var(--teal);
+    border-radius: 50%;
+    width: 50px;
+    height: 50px;
+    font-size: 1.5em;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: rgba(79, 209, 197, 0.1);
+    color: var(--teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.music-toggle:hover {
+    background-color: rgba(79, 209, 197, 0.3);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px rgba(79, 209, 197, 0.5);
+}
+
+.music-toggle:active {
+    transform: scale(0.95);
 }
 
 .header .mask-plain.left {
@@ -327,4 +357,20 @@ h2 {
 /* Center align ingredients within sections */
 #bases, #mixers, #garnishes {
     text-align: center;
+}
+
+/* Pulse animation for music button when autoplay is blocked */
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(79, 209, 197, 0.7);
+    }
+    70% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 10px rgba(79, 209, 197, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(79, 209, 197, 0);
+    }
 }
